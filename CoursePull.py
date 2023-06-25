@@ -73,7 +73,7 @@ def do_post_course_pull(course_id: int,poll_id:int):
             answer = [opt['value'] for opt in question['options2']]
             poll['questions'][index]['answers'] = answer[:3]
         elif question['type'] == '3':
-            poll['questions'][index]['answer'] = defaultAnswer.get(question['seq']).get('answer')
+            poll['questions'][index]['answer'] = defaultAnswer.get(question['seq'],'default').get('answer')
         else:
             print('error question type : ' + question['type'])
             exit(0)
