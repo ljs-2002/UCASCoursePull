@@ -48,8 +48,7 @@ def get_course_list(term_id:int):
     course_list_req = requests.get(url, cookies=website_cooke, headers=headers)
     course_list = json.loads(course_list_req.text)
     if(course_list['code'] != 200):
-        print("get course error with code: " + str(course_list['code']) +
-                                " and message: " + course_list['message'])
+        print(f"get course error with code: {str(course_list['code'])} and message: {course_list['message']}" )
         exit(0)
     course_list = course_list['data']
     id_dict_list = []
@@ -89,10 +88,8 @@ def do_post_course_pull(course_id: int,poll_id:int):
         exit(0)
 
 def post_course_pull(id_dict_list:list):
-    # for id_dict in id_dict_list:
-    #     do_post_course_pull(id_dict['courseId'],id_dict['pollId'])
-    id_dict = id_dict_list[-1]
-    do_post_course_pull(id_dict['courseId'],id_dict['pollId'])
+    for id_dict in id_dict_list:
+        do_post_course_pull(id_dict['courseId'],id_dict['pollId'])
 
 def course_pull():
     term_id = get_term()
