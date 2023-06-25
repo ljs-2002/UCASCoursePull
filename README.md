@@ -9,7 +9,7 @@
 - 本脚本依赖于`browser_cookie3`库，请使用下列语句安装：
 
   ```shell
-  python -m install browser-cookie3
+  python -m pip install browser-cookie3
   ```
 
 
