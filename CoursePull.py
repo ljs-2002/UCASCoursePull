@@ -4,10 +4,13 @@ import configparser
 import json
 
 domain = 'bkkcpj.ucas.ac.cn'
+# 从本地获取cookie
 website_cooke = browser_cookie3.edge(domain_name=domain)
 cookie = website_cooke.__getattribute__('_cookies')
+#从cookie解析出Admin-Token, 用于header中的Authorization字段
 token = cookie[domain]['/']['Admin-Token']
 auth = token.value
+#构造headers
 headers = {'Authorization': token.value}
 headers_post = {
     'Authorization': token.value,
@@ -67,11 +70,14 @@ def do_post_course_pull(course_id: int,poll_id:int):
     poll['courseId'] = str(course_id)
     poll['totalScore'] = 100
     for index,question in enumerate(poll['questions']):
+        # type=1是文字单选，type=4是数字单选
         if question['type'] == '1' or question['type'] == '4':
             poll['questions'][index]['answer'] = question['options2'][0]['value']
+        # type=2是文字多选
         elif question['type'] == '2':
             answer = [opt['value'] for opt in question['options2']]
             poll['questions'][index]['answers'] = answer[:3]
+        # type=3是文字简答
         elif question['type'] == '3':
             poll['questions'][index]['answer'] = defaultAnswer.get(question['seq'],'default').get('answer')
         else:
