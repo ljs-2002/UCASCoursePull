@@ -34,9 +34,10 @@ default_choice_multiple_end = 3
 MAX_MULTIPLE_AMOUNT = 17
 default_choice = defaultAnswer.get('defaultChoiceOption',{})
 if len(default_choice) >0:
-    default_choice_single = min(default_choice.get('single',0),4)
-    default_choice_multiple_start = min(default_choice.get('multipleStart',0),MAX_MULTIPLE_AMOUNT)
-    default_choice_multiple_end = min(default_choice.get('multipleAmount',3),MAX_MULTIPLE_AMOUNT-default_choice_multiple_start)
+    default_choice_single = min(int(default_choice.get('single',0)),4)
+    default_choice_multiple_start = min(int(default_choice.get('multipleStart',0)),MAX_MULTIPLE_AMOUNT)
+    default_choice_multiple_end = min(int(default_choice.get('multipleAmount',3)),
+                                        MAX_MULTIPLE_AMOUNT-default_choice_multiple_start)
     default_choice_multiple_end += default_choice_multiple_start
 
 def get_term():
