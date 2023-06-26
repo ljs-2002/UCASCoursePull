@@ -28,6 +28,16 @@ def load_config(config_file_path:str):
     return config_dict
 
 defaultAnswer = load_config('defaultAnswer.ini')
+default_choice_single = 0
+default_choice_multiple_start = 0
+default_choice_multiple_end = 3
+MAX_MULTIPLE_AMOUNT = 17
+default_choice = defaultAnswer.get('defaultChoiceOption',{})
+if len(default_choice) >0:
+    default_choice_single = min(default_choice.get('single',0),4)
+    default_choice_multiple_start = min(default_choice.get('multipleStart',0),MAX_MULTIPLE_AMOUNT)
+    default_choice_multiple_end = min(default_choice.get('multipleAmount',3),MAX_MULTIPLE_AMOUNT-default_choice_multiple_start)
+    default_choice_multiple_end += default_choice_multiple_start
 
 def get_term():
     url = 'https://bkkcpj.ucas.ac.cn/ea00031/findAllTerms'
@@ -72,11 +82,11 @@ def do_post_course_pull(course_id: int,poll_id:int):
     for index,question in enumerate(poll['questions']):
         # type=1是文字单选，type=4是数字单选
         if question['type'] == '1' or question['type'] == '4':
-            poll['questions'][index]['answer'] = question['options2'][0]['value']
+            poll['questions'][index]['answer'] = question['options2'][default_choice_single]['value']
         # type=2是文字多选
         elif question['type'] == '2':
             answer = [opt['value'] for opt in question['options2']]
-            poll['questions'][index]['answers'] = answer[:3]
+            poll['questions'][index]['answers'] = answer[default_choice_multiple_start:default_choice_multiple_end]
         # type=3是文字简答
         elif question['type'] == '3':
             poll['questions'][index]['answer'] = defaultAnswer.get(question['seq'],'default').get('answer')
