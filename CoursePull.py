@@ -8,7 +8,10 @@ domain = 'bkkcpj.ucas.ac.cn'
 website_cooke = browser_cookie3.edge(domain_name=domain)
 cookie = website_cooke.__getattribute__('_cookies')
 #从cookie解析出Admin-Token, 用于header中的Authorization字段
-token = cookie[domain]['/']['Admin-Token']
+try:
+    token = cookie[domain]['/']['Admin-Token']
+except KeyError:
+    raise Exception(f"get token from cookie error, please login {domain} first")
 auth = token.value
 #构造headers
 headers = {'Authorization': token.value}
@@ -47,8 +50,8 @@ def get_term():
     terms_dict = json.loads(all_terms_req.text)
     all_terms = terms_dict['data']
     if(terms_dict['code'] != 200):
-        print(f"get term info error with code: {str(terms_dict['code'])} and message: {terms_dict['message']}")
-        exit(0)
+        raise Exception(f"get term info error with code: {str(terms_dict['code'])} and message: {terms_dict['message']}")
+
     id = 0
     for term in all_terms:
         if(term["isXk"]=='Y'):
@@ -62,8 +65,8 @@ def get_course_list(term_id:int):
     course_list_req = requests.get(url, cookies=website_cooke, headers=headers)
     course_list = json.loads(course_list_req.text)
     if(course_list['code'] != 200):
-        print(f"get course error with code: {str(course_list['code'])} and message: {course_list['message']}" )
-        exit(0)
+        raise Exception(f"get course error with code: {str(course_list['code'])} and message: {course_list['message']}" )
+    
     course_list = course_list['data']
     id_dict_list = []
     for course in course_list:
@@ -72,6 +75,7 @@ def get_course_list(term_id:int):
     return id_dict_list
 
 def do_post_course_pull(course_id: int,poll_id:int):
+    do_post :bool = True
     base_url = 'https://bkkcpj.ucas.ac.cn/myPoll/getById?id='
     headers = headers_post
     url = base_url + str(poll_id) + '&courseId=' + str(course_id)
@@ -81,6 +85,10 @@ def do_post_course_pull(course_id: int,poll_id:int):
     poll['courseId'] = str(course_id)
     poll['totalScore'] = 100
     for index,question in enumerate(poll['questions']):
+        # 如果已经填写过了，就跳过，并且不发送post请求
+        if question['answer'] != None or question['answers'] != None:
+            do_post = False
+            break
         # type=1是文字单选，type=4是数字单选
         if question['type'] == '1' or question['type'] == '4':
             poll['questions'][index]['answer'] = question['options2'][default_choice_single]['value']
@@ -92,17 +100,16 @@ def do_post_course_pull(course_id: int,poll_id:int):
         elif question['type'] == '3':
             poll['questions'][index]['answer'] = defaultAnswer.get(question['seq'],'default').get('answer')
         else:
-            print('error question type : ' + question['type'])
-            exit(0)
-    post_data = json.dumps(poll)
-    submit = requests.post('https://bkkcpj.ucas.ac.cn/myPoll/submit', cookies=website_cooke, headers=headers,data=post_data)
-    if(submit.status_code != 200):
-        print(f"post course {course_id} error with code: {str(submit.status_code)} and message: {submit.text}")
-        exit(0)
-    submit_statue = json.loads(submit.text)
-    if(submit_statue['code'] != 200):
-        print(f"post course {course_id} error with code: {str(submit_statue['code'])} and message: {submit_statue['message']}")
-        exit(0)
+            raise ValueError('error question type : ' + question['type'])
+    
+    if do_post:
+        post_data = json.dumps(poll)
+        submit = requests.post('https://bkkcpj.ucas.ac.cn/myPoll/submit', cookies=website_cooke, headers=headers,data=post_data)
+        if(submit.status_code != 200):
+            raise Exception(f"post course {course_id} error with code: {str(submit.status_code)} and message: {submit.text}")
+        submit_statue = json.loads(submit.text)
+        if(submit_statue['code'] != 200):
+            raise Exception(f"post course {course_id} error with code: {str(submit_statue['code'])} and message: {submit_statue['message']}")
 
 def post_course_pull(id_dict_list:list):
     for id_dict in id_dict_list:
