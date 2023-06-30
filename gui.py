@@ -11,7 +11,7 @@ def run():
         total,post = post_course_pull(id_dict_list)
         return [f"总共{total}门课程，其中{post}门课程未被填写",f"填写完成，填写了{post}门课程"]
     except Exception as e:
-        return e
+        return str(e)
 
 def do_update_textbox(message: Union[str, list[str]]):
     if isinstance(message, str):
