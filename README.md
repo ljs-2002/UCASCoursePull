@@ -6,6 +6,7 @@
 
 ## 安装依赖
 
+- 使用`release`中打包好的exe文件的用户可以跳过此步骤。
 - 本脚本依赖于`browser_cookie3`库，请使用下列语句安装：
 
   ```shell
@@ -20,17 +21,21 @@
 - 接着运行`CoursePull.py`文件，即可一次性完成当前所有科目的评价。
 - 在`release`中有打包好的exe文件，可以在没有python环境的情况下直接运行。
   - **~~由于使用pyinstaller打包城exe，可能会出现报毒，不放心者可通过python文件运行。~~**
-  - 在**`v1.2.0`**之后的版本解决了报毒的问题。
+  - **在`v1.2.0`之后的版本解决了报毒的问题。**
   
 - 可以在配置文件中修改单选题和多选题的默认选项。
 
-- 在`GUI`分支有GUI版本，可以自行选择。
 
 
 
 ## 说明
 
-- 本脚本默认所有单选题选择第一个，所有多选题选择前三个，文字简答题的默认回答在`defaultAnswer.ini`中配置。
+- 本脚本的配置文件为`defaultAnswer.ini`
+  - 单选题的默认选项通过配置文件的`single`项中配置；
+  - 多选题的默认选项通过配置文件的`multiple_start`项和`multiple_amount`项配置；
+    - `multiple_start`项为多选题选择的起始选项；
+    - `multiple_amount`项为多选题选择的选项数量；
+  - 文字简答题的默认回答在对应题号的`answer`项中配置。
 - ~~不使用**edge**浏览器的用户可以自行修改`CoursePull.py`中获取`Cookie`和解析出`Admin-Token`的部分，以适配你的设备。~~
 - 脚本将首先**尝试获取所有的cookie**，若获取失败则会**尝试获取edge浏览器的cookie**。请获取所有cookie失败并且不使用edge浏览器的用户自行修改`CoursePull.py`中获取Cookie和解析Admin-Token的部分以适配你的设备。
 - 已评价的课程不会被覆盖。
