@@ -11,7 +11,7 @@ cookie = website_cooke.__getattribute__('_cookies')
 try:
     token = cookie[domain]['/']['Admin-Token']
 except KeyError:
-    raise Exception(f"get token from cookie error, please login {domain} first")
+    raise Exception(f"get token from cookie error, please login {domain} first to get cookie")
 auth = token.value
 #构造headers
 headers = {'Authorization': token.value}
@@ -75,6 +75,10 @@ def get_course_list(term_id:int):
     return id_dict_list
 
 def do_post_course_pull(course_id: int,poll_id:int):
+    '''
+        提交课程评价
+        return :bool 是否进行了提交
+    '''
     do_post :bool = True
     base_url = 'https://bkkcpj.ucas.ac.cn/myPoll/getById?id='
     headers = headers_post
@@ -110,10 +114,20 @@ def do_post_course_pull(course_id: int,poll_id:int):
         submit_statue = json.loads(submit.text)
         if(submit_statue['code'] != 200):
             raise Exception(f"post course {course_id} error with code: {str(submit_statue['code'])} and message: {submit_statue['message']}")
+    
+    return do_post
 
 def post_course_pull(id_dict_list:list):
+    '''
+        对课程列表中的所有课程提交评价
+        - return :tuple (total,counter) total:总数 counter:提交数
+    '''
+    counter = 0
+    total = len(id_dict_list)
     for id_dict in id_dict_list:
-        do_post_course_pull(id_dict['courseId'],id_dict['pollId'])
+        if(do_post_course_pull(id_dict['courseId'],id_dict['pollId'])):
+            counter += 1
+    return total,counter
 
 def course_pull():
     term_id = get_term()

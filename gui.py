@@ -1,6 +1,6 @@
 import tkinter as tk
+from typing import Union
 from datetime import datetime
-from requests.exceptions import ProxyError
 from CoursePull import get_term, get_course_list, post_course_pull
 
 def run():
@@ -8,16 +8,19 @@ def run():
     try:
         term_id = get_term()
         id_dict_list = get_course_list(term_id)
-        post_course_pull(id_dict_list)
-        return "填写完成"
+        total,post = post_course_pull(id_dict_list)
+        return [f"总共{total}门课程，其中{post}门课程未被填写",f"填写完成，填写了{post}门课程"]
     except Exception as e:
         return e
 
-def do_update_textbox(message:str):
-    textbox.config(state=tk.NORMAL)  # 将文本框设置为可编辑状态
-    current_time = datetime.now().strftime("%H:%M:%S")  # 获取当前时间
-    textbox.insert(tk.END, f"[{current_time}] {message}\n")  # 在文本框中插入新的文本
-    textbox.config(state=tk.DISABLED)  # 将文本框设置为只读状态
+def do_update_textbox(message: Union[str, list[str]]):
+    if isinstance(message, str):
+        message = [message]
+    for m in message:
+        textbox.config(state=tk.NORMAL)  # 将文本框设置为可编辑状态
+        current_time = datetime.now().strftime("%H:%M:%S")  # 获取当前时间
+        textbox.insert(tk.END, f"[{current_time}] {m}\n")  # 在文本框中插入新的文本
+        textbox.config(state=tk.DISABLED)  # 将文本框设置为只读状态
 
 def update_textbox():
     do_update_textbox("正在填写...")
