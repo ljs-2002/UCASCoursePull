@@ -1,4 +1,4 @@
-import tkinter as tk
+from tkinter import Tk,Button,Text,Scrollbar,NORMAL,DISABLED,END
 from typing import Union
 from datetime import datetime
 from CoursePull import get_term, get_course_list, post_course_pull
@@ -17,10 +17,10 @@ def do_update_textbox(message: Union[str, list[str]]):
     if isinstance(message, str):
         message = [message]
     for m in message:
-        textbox.config(state=tk.NORMAL)  # 将文本框设置为可编辑状态
+        textbox.config(state=NORMAL)  # 将文本框设置为可编辑状态
         current_time = datetime.now().strftime("%H:%M:%S")  # 获取当前时间
-        textbox.insert(tk.END, f"[{current_time}] {m}\n")  # 在文本框中插入新的文本
-        textbox.config(state=tk.DISABLED)  # 将文本框设置为只读状态
+        textbox.insert(END, f"[{current_time}] {m}\n")  # 在文本框中插入新的文本
+        textbox.config(state=DISABLED)  # 将文本框设置为只读状态
 
 def update_textbox():
     do_update_textbox("正在填写...")
@@ -29,24 +29,24 @@ def update_textbox():
     do_update_textbox(result)
 
 # 创建主窗口
-window = tk.Tk()
+window = Tk()
 # 设置窗口标题
 window.title("课程评价填写")
 # 设置窗口大小
 window.geometry("400x300")
 
 # 创建按钮
-button = tk.Button(window, text="开始填写", command=update_textbox)
+button = Button(window, text="开始填写", command=update_textbox)
 button.grid(row=0, column=0, pady=5)  # 使用grid布局管理器并设置pady参数
 
 # 创建文本框
-textbox = tk.Text(window, height=10, width=50)
+textbox = Text(window, height=10, width=50)
 textbox.grid(row=1, column=0, sticky="nsew")  # 使用grid布局管理器并设置sticky参数
 do_update_textbox("就绪.")
 do_update_textbox("请点击按钮开始填写.")
 
 # 创建滚动条
-scrollbar = tk.Scrollbar(window, command=textbox.yview)
+scrollbar = Scrollbar(window, command=textbox.yview)
 scrollbar.grid(row=1, column=1, sticky="ns")  # 使用grid布局管理器并设置sticky参数
 
 # 配置滚动条与文本框的关联

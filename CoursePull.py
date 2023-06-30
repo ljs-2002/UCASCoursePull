@@ -5,7 +5,13 @@ import json
 
 domain = 'bkkcpj.ucas.ac.cn'
 # 从本地获取cookie
-website_cooke = browser_cookie3.edge(domain_name=domain)
+try:
+    website_cooke = browser_cookie3.load(domain_name=domain)
+except Exception as e:
+    try:
+        website_cooke = browser_cookie3.edge(domain_name=domain)
+    except Exception as e:
+        raise e
 cookie = website_cooke.__getattribute__('_cookies')
 #从cookie解析出Admin-Token, 用于header中的Authorization字段
 try:
