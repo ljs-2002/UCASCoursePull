@@ -31,7 +31,8 @@
 ## 说明
 
 - 本脚本默认所有单选题选择第一个，所有多选题选择前三个，文字简答题的默认回答在`defaultAnswer.ini`中配置。
-- 不使用**edge**浏览器的用户可以自行修改`CoursePull.py`中获取`Cookie`和解析出`Admin-Token`的部分，以适配你的设备。
+- ~~不使用**edge**浏览器的用户可以自行修改`CoursePull.py`中获取`Cookie`和解析出`Admin-Token`的部分，以适配你的设备。~~
+- 脚本将首先**尝试获取所有的cookie**，若获取失败则会**尝试获取edge浏览器的cookie**。请获取所有cookie失败并且不使用edge浏览器的用户自行修改`CoursePull.py`中获取Cookie和解析Admin-Token的部分以适配你的设备。
 - 已评价的课程不会被覆盖。
 
 
