@@ -17,7 +17,7 @@ cookie = website_cooke.__getattribute__('_cookies')
 try:
     token = cookie[domain]['/']['Admin-Token']
 except KeyError:
-    raise Exception(f"get token from cookie error, please login {domain} first to get cookie")
+    raise Exception(f"获取cookie失败，请先登陆课程评价网站以刷新cookie")
 auth = token.value
 #构造headers
 headers = {'Authorization': token.value}
@@ -55,7 +55,9 @@ def get_term():
     all_terms_req = requests.get(url, cookies=website_cooke, headers=headers)
     terms_dict = json.loads(all_terms_req.text)
     all_terms = terms_dict['data']
-    if(terms_dict['code'] != 200):
+    if(terms_dict['code'] == 4000):
+        raise Exception("Cookie 已过期，请重新登陆课程评价网站以刷新cookie")
+    elif(terms_dict['code'] != 200):
         raise Exception(f"get term info error with code: {str(terms_dict['code'])} and message: {terms_dict['message']}")
 
     id = 0
